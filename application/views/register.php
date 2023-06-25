@@ -4,39 +4,38 @@
 <meta charset="UTF-8">
 </head>
 <body>
-	<div class="container">
-		<div class="row-fluid mt-5" align="center">
-			<h2>Signup</h2>
-		</div>
-		<div class="row-full mt-2">
-			<?php echo form_open('register');?>
-			<p>Nama:</p>
-			<p>
-			<input type="text" name="name" class="form-control" value="<?php echo set_value('name'); ?>" required/>
-			</p>
-			<p> <?php echo form_error('name'); ?> </p>
+	<div class="container py-5">
+		<div class="card mx-auto" style="max-width: 900px;">
+			<div class="row-fluid mt-5" align="center">
+				<h2>SIgn Up</h2>
+			</div>
+			
+			<div class="row-fluid mt-2 mx-5">
+				<form method="post" action="<?php echo base_url(); ?>/login/process">
+					<p>Nama:</p>
+					<p>
+					<input type="text" name="nama" class="form-control" placeholder="Masukkan nama..." value="<?php echo set_value('nama'); ?>" required/>
+					</p>
+					<p> <?php echo form_error('nama'); ?> </p>
 
-			<p>Email:</p>
-			<p>
-			<input type="text" name="email" class="form-control" value="<?php echo set_value('email'); ?>" required/>
-			</p>
-			<p> <?php echo form_error('email'); ?> </p>
+					<p>Email:</p>
+					<p>
+					<input type="email" name="email" class="form-control" placeholder="Masukkan email..." value="<?php echo set_value('email'); ?>" required/>
+					</p>
+					<p> <?php echo form_error('email'); ?> </p>
 
-			<p>Password:</p>
-			<p>
-			<input type="password" name="password" class="form-control" value="<?php echo set_value('password'); ?>" required/>
-			</p>
-			<p> <?php echo form_error('password'); ?> </p>
+					<p>Password:</p>
+					<p>
+					<input type="password" name="password" class="form-control" placeholder="Masukkan password..." value="<?php echo set_value('password'); ?>" required/>
+					</p>
+					<p> <?php echo form_error('password'); ?> </p>
 
-			<p align="center">
-			<button type="submit" class="btn btn-success">Signup</button>
-			</p>
+					<div class="row mb-5" align="center">
+						<button type="submit" class="btn btn-success">Signup</button>
+					</div>
+				</form>
 
-			<?php echo form_close();?>
-
-	<!-- <p>
-	Kembali ke beranda, Silakan klik <?php echo anchor(site_url().'/beranda','di sini..'); ?>
-	</p> -->
+			</div>
 		</div>
   	</div>
 </body>
