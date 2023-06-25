@@ -26,7 +26,7 @@
 					</div>
 					<div class="form-group">
 						<label for="username">Email</label>
-						<input type="text" class="form-control" name="email" id="email" placeholder="Masukkan email" required>
+						<input type="email" class="form-control" name="email" id="email" placeholder="Masukkan email...">
 					</div>
 					<div class="form-group">
 						<label for="password">Password</label>

@@ -11,18 +11,33 @@
 			</div>
 			
 			<div class="row-fluid mt-2 mx-5">
-				<form method="post" action="<?php echo base_url(); ?>/login/process">
-					<p>Email:</p>
-					<p>
-					<input type="email" name="email" class="form-control" placeholder="Masukkan email..." value="<?php echo set_value('email'); ?>" required/>
-					</p>
-					<p> <?php echo form_error('email'); ?> </p>
+				<?php 
+				if($this->session->flashdata('error') !='')
+				{
+					echo '<div class="alert alert-danger" role="alert">';
+					echo $this->session->flashdata('error');
+					echo '</div>';
+				}
+				?>
+ 
+				<?php 
+				if($this->session->flashdata('success_register') !='')
+				{
+					echo '<div class="alert alert-info" role="alert">';
+					echo $this->session->flashdata('success_register');
+					echo '</div>';
+				}
+				?>
 
-					<p>Password:</p>
-					<p>
-					<input type="password" name="password" class="form-control" placeholder="Masukkan password..." value="<?php echo set_value('password'); ?>" required/>
-					</p>
-					<p> <?php echo form_error('password'); ?> </p>
+				<form method="post" action="<?php echo base_url(); ?>/login/process">
+					<div class="form-group">
+						<label for="email">Email</label>
+						<input type="email" class="form-control" name="email" id="email" placeholder="Masukkan email...">
+					</div>
+					<div class="form-group">
+						<label for="password">Password</label>
+						<input type="password" class="form-control" name="password" id="password" placeholder="Masukkan password...">
+					</div>
 
 					<div class="row">
 						<div class="col-6">
