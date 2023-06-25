@@ -7,11 +7,20 @@ class GenerateKey extends CI_Controller {
     {
         $data['title'] = 'Form Membuat Kunci';
 
+		$this->sessionValidate();
+
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidebar', $data);
         $this->load->view('generatekey');
         $this->load->view('templates/footer');
     }
+
+	public function sessionValidate() {
+		if (!$this->session->userdata('nama')) {
+			$this->session->set_flashdata('error', "Session habis");
+			redirect('/login'); // Replace '/redirect-path' with the actual URL where you want to redirect the user
+		}
+	}
 
 	public function generate()
 	{
