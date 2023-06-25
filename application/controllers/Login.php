@@ -24,6 +24,7 @@ class Login extends CI_Controller {
 		$password = $this->input->post('password');
 		if($this->auth->login_user($email,$password))
 		{
+			$this->session->set_flashdata('success','Login berhasil');
 			redirect('/dashboard');
 		}
 		else
@@ -38,6 +39,7 @@ class Login extends CI_Controller {
 		$this->session->unset_userdata('email');
 		$this->session->unset_userdata('nama');
 		$this->session->unset_userdata('is_login');
+		$this->session->set_flashdata('success','Logout berhasil');
 		redirect('login');
 	}
 }

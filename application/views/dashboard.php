@@ -1,1 +1,1 @@
-Hello Dashboard
+<p>Hello Dashboard</p>

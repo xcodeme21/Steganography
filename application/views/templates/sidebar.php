@@ -32,7 +32,7 @@
           <img src="<?= base_url('assets/template/') ?>dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Kriptografi & Steganografi</a>
+          <a href="#" class="d-block"><?php echo $this->session->userdata('nama'); ?></a>
         </div>
       </div>
 
@@ -41,35 +41,35 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
         <li class="nav-item">
-            <a href="<?= base_url('dashboard') ?>" class="nav-link">
+            <a href="<?= base_url('dashboard') ?>"  class="nav-link <?php if(current_url() == base_url('dashboard')) echo 'active'; ?>">
               <i class="nav-icon fas fa-home"></i>
               <p>Dashboard</p>
             </a>
           </li>
 
           <li class="nav-item">
-            <a href="<?= base_url('generatekey') ?>" class="nav-link">
+            <a href="<?= base_url('generatekey') ?>" class="nav-link <?php if(current_url() == base_url('generatekey')) echo 'active'; ?>">
               <i class="nav-icon fas fa-key"></i>
               <p>Generate Key</p>
             </a>
           </li>
          
           <li class="nav-item">
-            <a href="<?= base_url('enkripsi') ?>" class="nav-link">
+            <a href="<?= base_url('enkripsi') ?>" class="nav-link <?php if(current_url() == base_url('enkripsi')) echo 'active'; ?>">
               <i class="nav-icon fas fa-lock"></i>
               <p>Enkrip & Sisip</p>
             </a>
           </li>
 
           <li class="nav-item">
-            <a href="<?= base_url('dekripsi') ?>" class="nav-link">
+            <a href="<?= base_url('dekripsi') ?>" class="nav-link <?php if(current_url() == base_url('dekripsi')) echo 'active'; ?>">
               <i class="nav-icon fas fa-unlock"></i>
               <p>Dekrip & Ekstrak</p>
             </a>
           </li>
 
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="<?php echo base_url(); ?>/login/logout" class="nav-link">
               <i class="nav-icon fas fa-user"></i>
               <p>Logout</p>
             </a>

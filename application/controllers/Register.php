@@ -29,7 +29,7 @@ class Register extends CI_Controller {
 			$password = $this->input->post('password');
 			$nama = $this->input->post('nama');
 			$this->auth->register($email,$password,$nama);
-			$this->session->set_flashdata('success_register','Proses Pendaftaran User Berhasil');
+			$this->session->set_flashdata('success','Proses Pendaftaran User Berhasil');
 			redirect('login');
 		}
 		else

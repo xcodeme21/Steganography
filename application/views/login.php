@@ -1,8 +1,8 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
-?><!DOCTYPE html>  
+?>
+<!DOCTYPE html>  
 <head>
 <meta charset="UTF-8">
-</head>
 <body>
 	<div class="container py-5">
 		<div class="card mx-auto" style="max-width: 900px;">
@@ -11,24 +11,8 @@
 			</div>
 			
 			<div class="row-fluid mt-2 mx-5">
-				<?php 
-				if($this->session->flashdata('error') !='')
-				{
-					echo '<div class="alert alert-danger" role="alert">';
-					echo $this->session->flashdata('error');
-					echo '</div>';
-				}
-				?>
- 
-				<?php 
-				if($this->session->flashdata('success_register') !='')
-				{
-					echo '<div class="alert alert-info" role="alert">';
-					echo $this->session->flashdata('success_register');
-					echo '</div>';
-				}
-				?>
-
+				<?php include(APPPATH . 'views/session_messages.php'); ?>
+				
 				<form method="post" action="<?php echo base_url(); ?>/login/process">
 					<div class="form-group">
 						<label for="email">Email</label>
@@ -56,4 +40,5 @@
 		</div>
   	</div>
 </body>
+<script src="<?= site_url('assets/template/dist/js/jquery-3.6.0.min.js') ?>"></script>
 </html>

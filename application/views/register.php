@@ -1,5 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
-?><!DOCTYPE html>  
+?>
+<!DOCTYPE html>  
 <head>
 <meta charset="UTF-8">
 </head>
@@ -11,14 +12,8 @@
 			</div>
 			
 			<div class="row-fluid mt-2 mx-5">
-				<?php 
-				if($this->session->flashdata('error') !='')
-				{
-					echo '<div class="alert alert-danger" role="alert">';
-					echo $this->session->flashdata('error');
-					echo '</div>';
-				}
-				?>
+				<?php include(APPPATH . 'views/session_messages.php'); ?>
+
 				<form method="post" class="mt-5 mb-5" action="<?php echo base_url(); ?>/register/process">
 					<div class="form-group">
 						<label for="nama">Nama</label>
@@ -39,4 +34,5 @@
 		</div>
   	</div>
 </body>
+<script src="<?= site_url('assets/template/dist/js/jquery-3.6.0.min.js') ?>"></script>
 </html>
