@@ -7,32 +7,32 @@
 	<div class="container py-5">
 		<div class="card mx-auto" style="max-width: 900px;">
 			<div class="row-fluid mt-5" align="center">
-				<h2>SIgn Up</h2>
+				<h2>Sign Up</h2>
 			</div>
 			
 			<div class="row-fluid mt-2 mx-5">
-				<form method="post" action="<?php echo base_url(); ?>/login/process">
-					<p>Nama:</p>
-					<p>
-					<input type="text" name="nama" class="form-control" placeholder="Masukkan nama..." value="<?php echo set_value('nama'); ?>" required/>
-					</p>
-					<p> <?php echo form_error('nama'); ?> </p>
-
-					<p>Email:</p>
-					<p>
-					<input type="email" name="email" class="form-control" placeholder="Masukkan email..." value="<?php echo set_value('email'); ?>" required/>
-					</p>
-					<p> <?php echo form_error('email'); ?> </p>
-
-					<p>Password:</p>
-					<p>
-					<input type="password" name="password" class="form-control" placeholder="Masukkan password..." value="<?php echo set_value('password'); ?>" required/>
-					</p>
-					<p> <?php echo form_error('password'); ?> </p>
-
-					<div class="row mb-5" align="center">
-						<button type="submit" class="btn btn-success">Signup</button>
+				<?php 
+				if($this->session->flashdata('error') !='')
+				{
+					echo '<div class="alert alert-danger" role="alert">';
+					echo $this->session->flashdata('error');
+					echo '</div>';
+				}
+				?>
+				<form method="post" class="mt-5 mb-5" action="<?php echo base_url(); ?>/register/process">
+					<div class="form-group">
+						<label for="nama">Nama</label>
+						<input type="text" class="form-control" name="nama" id="nama" placeholder="Masukkan nama...">
 					</div>
+					<div class="form-group">
+						<label for="username">Email</label>
+						<input type="text" class="form-control" name="email" id="email" placeholder="Masukkan email" required>
+					</div>
+					<div class="form-group">
+						<label for="password">Password</label>
+						<input type="password" class="form-control" name="password" id="password" placeholder="Masukkan password...">
+					</div>
+					<button type="submit" class="btn btn-primary">Register</button>
 				</form>
 
 			</div>
