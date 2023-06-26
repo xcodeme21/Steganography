@@ -29,7 +29,7 @@ class GenerateKey extends CI_Controller {
 		$q = $this->input->post('inpuip');
 
 		if (!$this->isPrime($p) || !$this->isPrime($q)) {
-			$this->session->set_flashdata('error', 'Hanya boleh bilangan prima');
+			$this->session->set_flashdata('error', 'Hanya boleh bilangan prima!');
 			redirect('generatekey');
 		}
 
