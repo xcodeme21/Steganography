@@ -11,6 +11,7 @@ class GenerateKey extends CI_Controller {
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidebar', $data);
+        $this->load->view('session_messages');
         $this->load->view('generatekey');
         $this->load->view('templates/footer');
     }
@@ -27,6 +28,11 @@ class GenerateKey extends CI_Controller {
 		$p = $this->input->post('inputp');
 		$q = $this->input->post('inpuip');
 
+		if (!$this->isPrime($p) || !$this->isPrime($q)) {
+			$this->session->set_flashdata('error', 'Hanya boleh bilangan prima');
+			redirect('generatekey');
+		}
+
 		$n = $p * $q;
 		$m = ($p - 1) * ($q - 1);
 
@@ -39,20 +45,36 @@ class GenerateKey extends CI_Controller {
 		$privateKey = "($d, $n)";
 		$publicKey = "($e, $n)";
 
-		$result = array(
-			"n" => $n,
-			"m" => $m,
-			"e" => $e,
-			"d" => $d,
-			"privateKey" => $privateKey,
-			"publicKey" => $publicKey
-		);
+		// Set the 
+		$this->session->set_flashdata('p', $p);
+		$this->session->set_flashdata('q', $q);
+		$this->session->set_flashdata('n', $n);
+		$this->session->set_flashdata('m', $m);
+		$this->session->set_flashdata('e', $e);
+		$this->session->set_flashdata('d', $d);
+		$this->session->set_flashdata('privateKey', $privateKey);
+		$this->session->set_flashdata('publicKey', $publicKey);
+		$this->session->set_flashdata('success', "Berhasil generate key");
 
-		$this->session->set_flashdata('pesan', 'Your message here');
-		
-		$this->output->set_content_type('application/json');
+		// Redirect to the desired page
+		redirect('generatekey');
+	}
 
-		$this->output->set_output(json_encode($result));
+	public function isPrime($number)
+	{
+		// 0 and 1 are not prime numbers
+		if ($number <= 1) {
+			return false;
+		}
+
+		// Check for divisibility from 2 to sqrt(number)
+		for ($i = 2; $i * $i <= $number; $i++) {
+			if ($number % $i == 0) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	

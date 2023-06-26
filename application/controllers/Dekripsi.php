@@ -11,6 +11,7 @@ class Dekripsi extends CI_Controller {
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidebar', $data);
+        $this->load->view('session_messages');
         $this->load->view('dekripsi');
         $this->load->view('templates/footer');
     }
