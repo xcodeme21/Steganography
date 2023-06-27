@@ -4,7 +4,8 @@ application/cache/*
 !application/cache/index.html
 
 application/logs/*
-application/uploads/*
+application/uploads/decrypt
+application/uploads/encrypt
 !application/logs/index.html
 
 !application/*/.htaccess

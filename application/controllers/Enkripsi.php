@@ -35,9 +35,9 @@ class Enkripsi extends CI_Controller {
 
     public function process() {
         // Set aturan validasi
-        $this->form_validation->set_rules('file', 'File Excel', 'required');
+        $this->form_validation->set_rules('excel_file', 'File Excel', 'required');
         $this->form_validation->set_rules('pwdfile', 'Public Key', 'required|callback_check_public_key_format');
-        $this->form_validation->set_rules('gambar', 'File Gambar', 'callback_check_image_format|required');
+        $this->form_validation->set_rules('gambar_file', 'File Gambar', 'callback_check_image_format|required');
 
         // Jalankan validasi
         if ($this->form_validation->run() == FALSE) {
@@ -47,7 +47,7 @@ class Enkripsi extends CI_Controller {
         } else {
             // Validasi sukses, proses file
             // Mendapatkan data file excel yang diunggah
-            $excelFile = $_FILES['file'];
+            $excelFile = $_FILES['excel_file'];
             $publicKey = $this->input->post('pwdfile');
 
             // Menentukan path untuk menyimpan file excel yang telah dienkripsi
@@ -57,7 +57,7 @@ class Enkripsi extends CI_Controller {
             $this->encryptExcelFile($excelFile['tmp_name'], $publicKey, $encryptedExcelPath);
 
             // Mendapatkan data file gambar yang diunggah
-            $gambarFile = $_FILES['gambar'];
+            $gambarFile = $_FILES['gambar_file'];
 
             // Menentukan path untuk menyimpan file gambar yang telah dienkripsi
             $encryptedGambarPath = APPPATH . 'uploads/encrypt/' . $gambarFile['name'];
@@ -142,3 +142,4 @@ class Enkripsi extends CI_Controller {
         $writer->save($excelFilePath);
     }
 }
+?>
