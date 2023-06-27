@@ -1,17 +1,17 @@
 <?= $this->session->flashdata('pesan'); ?>
     <div class="card-body">
-                    <form class="form-horizontal" method="post" action="encrypt-process.php" enctype="multipart/form-data">
+    				<form class="form-horizontal" method="post" action="./dekripsi/process" enctype="multipart/form-data">
                         <fieldset>
                                     <div class="form-group">
                                         <label class="col-lg-2 control-label" style="color:#333;" for="inputFile">Input Stego Image</label>
                                         <div class="col-lg-4">
-                                            <input class="form-control" id="inputFile" placeholder="Input File" type="file" name="file" required>
+                                            <input class="form-control" id="inputFile" placeholder="Input File" type="file" name="image" required>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-lg-2 control-label" style="color:#333;" for="inputPassword">Private Key</label>
                                         <div class="col-lg-4">
-                                            <input class="form-control" id="inputPassword" type="password" placeholder="(d,n)" name="pwdfile" required>
+                                            <input class="form-control" id="inputPassword" type="text" placeholder="(d,n)" name="private_key" required>
                                         </div>
                                     </div>
                                     <div class="form-group">
