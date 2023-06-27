@@ -62,7 +62,7 @@ class Dekripsi extends CI_Controller {
 
 				// Perform decryption using the private key
 				$privateKey = $this->input->post('private_key');
-				$decryptedFilePath = $this->decryptImage($filePath, $privateKey);
+				$decryptedFilePath = $this->decryptImage($filePath, $privateKey, $uploadData["full_name"]);
 
 				if ($decryptedFilePath) {
 					$this->session->set_flashdata('success', "Image successfully decrypted. Decrypted file path: " . $decryptedFilePath);
@@ -76,7 +76,7 @@ class Dekripsi extends CI_Controller {
 		}
 	}
 
-	private function decryptImage($filePath, $privateKey) {
+	private function decryptImage($filePath, $privateKey, $fullName) {
 		// Parse the private key values
 		$privateKey = trim($privateKey, '()');
 		list($d, $n) = explode(',', $privateKey);
@@ -98,7 +98,7 @@ class Dekripsi extends CI_Controller {
 		}
 
 		// Save the decrypted image data to a new file
-		$decryptedFilePath = APPPATH . 'uploads/decrypted_image.jpg'; // Replace with the actual path and filename of the decrypted image
+		$decryptedFilePath = APPPATH . 'uploads/'.$fullName; // Replace with the actual path and filename of the decrypted image
 		file_put_contents($decryptedFilePath, $decryptedData);
 
 		if (file_exists($decryptedFilePath)) {
