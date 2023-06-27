@@ -41,7 +41,7 @@ class Dekripsi extends CI_Controller {
 			// Validation succeeded, continue with image upload and decryption
 
 			// Configuration for file upload
-			$config['upload_path'] = APPPATH . 'uploads/'; // Specify the folder for storing the image
+			$config['upload_path'] = APPPATH . 'uploads/decrypt/'; // Specify the folder for storing the image
 			$config['allowed_types'] = 'gif|jpg|jpeg|png'; // Specify the allowed file types
 			$config['max_size'] = 2048; // Specify the maximum file size (in kilobytes)
 
@@ -98,7 +98,7 @@ class Dekripsi extends CI_Controller {
 		}
 
 		// Save the decrypted image data to a new file
-		$decryptedFilePath = APPPATH . 'uploads/'.$fullName; // Replace with the actual path and filename of the decrypted image
+		$decryptedFilePath = APPPATH . 'uploads/decrypt/'.$fullName; // Replace with the actual path and filename of the decrypted image
 		file_put_contents($decryptedFilePath, $decryptedData);
 
 		if (file_exists($decryptedFilePath)) {
