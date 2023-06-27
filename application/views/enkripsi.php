@@ -72,7 +72,7 @@
           <div class="col-md-12">
             <div class="card">
               <div class="card-body">
-                <form class="form-horizontal" method="post" action="<?php echo base_url('enkripsi/process'); ?>" enctype="multipart/form-data">
+                <form class="form-horizontal" method="post" action="./enkripsi/process" enctype="multipart/form-data">
 									<fieldset>
 											<div class="form-group">
 													<label class="col-lg-2 control-label" style="color:#333;" for="inputFile">Input File Excel</label>
