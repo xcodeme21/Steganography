@@ -13,9 +13,17 @@ class Login extends CI_Controller {
     {
         $data['title'] = 'Login';
 
+		$this->sessionValidate();
+
         $this->load->view('templates/header', $data);
         $this->load->view('login');
     }
+
+	public function sessionValidate() {
+		if ($this->session->userdata('nama')) {
+			redirect('/dashboard');
+		}
+	}
 	
  
 	public function process()

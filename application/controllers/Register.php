@@ -13,10 +13,18 @@ class Register extends CI_Controller {
     {
         $data['title'] = 'Signup';
 
+		$this->sessionValidate();
+
         $this->load->view('templates/header', $data);
         $this->load->view('register');
 		$this->load->model('auth');
     }
+
+	public function sessionValidate() {
+		if ($this->session->userdata('nama')) {
+			redirect('/dashboard');
+		}
+	}
  
 	public function process()
 	{
