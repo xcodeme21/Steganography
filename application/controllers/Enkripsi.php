@@ -1,10 +1,9 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-require_once APPPATH . 'libraries/PhpSpreadsheet/IOFactory.php';
-
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 class Enkripsi extends CI_Controller {
     public function __construct() {
@@ -13,8 +12,7 @@ class Enkripsi extends CI_Controller {
         $this->load->library('form_validation');
     }
 
-    public function index()
-    {
+    public function index() {
         $data['title'] = 'Form Enkripsi dan Sisip';
 
         $this->sessionValidate();
@@ -35,9 +33,7 @@ class Enkripsi extends CI_Controller {
 
     public function process() {
         // Set aturan validasi
-        $this->form_validation->set_rules('excel_file', 'File Excel', 'required');
-		$this->form_validation->set_rules('pwdfile', 'Public Key', 'required|callback_check_public_key_format');
-		$this->form_validation->set_rules('gambar_file', 'File Gambar', 'callback_check_image_format|required');
+        $this->form_validation->set_rules('pwdfile', 'Public Key', 'required|callback_check_public_key_format');
 
         // Jalankan validasi
         if ($this->form_validation->run() == FALSE) {
@@ -102,44 +98,48 @@ class Enkripsi extends CI_Controller {
         // Membaca konten file excel
         $content = file_get_contents($filePath);
 
+        // Generate a random IV
+        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('AES-256-CBC'));
+
         // Proses enkripsi menggunakan openssl_encrypt()
-        $encryptedContent = openssl_encrypt($content, 'AES-256-CBC', $publicKey, OPENSSL_RAW_DATA);
+        $encryptedContent = openssl_encrypt($content, 'AES-256-CBC', $publicKey, OPENSSL_RAW_DATA, $iv);
 
         // Menyimpan file yang dienkripsi ke lokasi tujuan
         file_put_contents($encryptedFilePath, $encryptedContent);
     }
+
 
     private function encryptGambarFile($filePath, $publicKey, $encryptedFilePath) {
         // Membaca konten file gambar
         $content = file_get_contents($filePath);
 
+        // Generate a random IV
+        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('AES-256-CBC'));
+
         // Proses enkripsi menggunakan openssl_encrypt()
-        $encryptedContent = openssl_encrypt($content, 'AES-256-CBC', $publicKey, OPENSSL_RAW_DATA);
+        $encryptedContent = openssl_encrypt($content, 'AES-256-CBC', $publicKey, OPENSSL_RAW_DATA, $iv);
 
         // Menyimpan file yang dienkripsi ke lokasi tujuan
         file_put_contents($encryptedFilePath, $encryptedContent);
     }
 
+
     private function sisipkanFileKeExcel($excelFilePath, $gambarFilePath) {
         // Buka file excel menggunakan PhpSpreadsheet
-        $spreadsheet = IOFactory::load($excelFilePath);
-
-        // Sisipkan informasi file ke dalam file excel
-        $worksheet = $spreadsheet->getActiveSheet();
-        $worksheet->setCellValue('A1', 'Nama File');
-        $worksheet->setCellValue('B1', 'Path File');
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->getActiveSheet()->setCellValue('A1', 'Nama File');
+        $spreadsheet->getActiveSheet()->setCellValue('B1', 'Path File');
 
         // Simpan gambar ke dalam file excel
-        $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+        $drawing = new Drawing();
         $drawing->setName('Nama Gambar');
         $drawing->setDescription('Deskripsi Gambar');
         $drawing->setPath($gambarFilePath);
         $drawing->setCoordinates('A2');
-        $drawing->setWorksheet($worksheet);
+        $drawing->setWorksheet($spreadsheet->getActiveSheet());
 
         // Simpan file excel yang telah diubah
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save($excelFilePath);
     }
 }
-?>

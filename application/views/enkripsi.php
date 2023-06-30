@@ -83,7 +83,7 @@
 											<div class="form-group">
 													<label class="col-lg-2 control-label" style="color:#333;" for="inputPassword">Public Key</label>
 													<div class="col-lg-4">
-															<input class="form-control" id="inputPassword" type="password" placeholder="(e,n)" name="pwdfile" required>
+															<input class="form-control" id="inputPassword" type="text" placeholder="(e,n)" name="pwdfile" required>
 													</div>
 											</div>
 											<div class="form-group">
