@@ -49,23 +49,26 @@ class Enkripsi extends CI_Controller {
             // Menentukan path untuk menyimpan file excel yang telah dienkripsi
             $encryptedExcelPath = APPPATH . 'uploads/encrypt/' . $excelFile['name'];
 
-            // Mengenkripsi file excel
-            $this->encryptExcelFile($excelFile['tmp_name'], $publicKey, $encryptedExcelPath);
+            // Menyimpan file excel yang diunggah ke lokasi tujuan tanpa enkripsi
+            move_uploaded_file($excelFile['tmp_name'], $encryptedExcelPath);
 
             // Mendapatkan data file gambar yang diunggah
             $gambarFile = $_FILES['gambar_file'];
 
-            // Menentukan path untuk menyimpan file gambar yang telah dienkripsi
-            $encryptedGambarPath = APPPATH . 'uploads/encrypt/' . $gambarFile['name'];
+            // Menentukan path untuk menyimpan file gambar
+            $gambarPath = APPPATH . 'uploads/encrypt/' . $gambarFile['name'];
 
-            // Mengenkripsi file gambar
-            $this->encryptGambarFile($gambarFile['tmp_name'], $publicKey, $encryptedGambarPath);
-
-            // Sisipkan file yang telah dienkripsi ke dalam file excel
-            $this->sisipkanFileKeExcel($encryptedExcelPath, $encryptedGambarPath);
+            // Menyimpan file gambar yang diunggah ke lokasi tujuan tanpa enkripsi
+            move_uploaded_file($gambarFile['tmp_name'], $gambarPath);
 
             // Set pesan flash
             $this->session->set_flashdata('success', 'File berhasil dienkripsi dan disisipkan.');
+
+            // Encrypt the image file
+            $this->encryptGambarFile($gambarPath, $publicKey, $gambarPath);
+
+            // Update the Excel file with the image name and path
+            $this->updateImagePathInExcel($encryptedExcelPath, $gambarFile['name'], $gambarPath);
 
             // Redirect atau tampilkan pesan berhasil, sesuai kebutuhan
             redirect('enkripsi');
@@ -95,51 +98,50 @@ class Enkripsi extends CI_Controller {
     }
 
     private function encryptExcelFile($filePath, $publicKey, $encryptedFilePath) {
-        // Membaca konten file excel
-        $content = file_get_contents($filePath);
+        // Load the Excel file using PhpSpreadsheet
+        $spreadsheet = IOFactory::load($filePath);
 
-        // Generate a random IV
-        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('AES-256-CBC'));
-
-        // Proses enkripsi menggunakan openssl_encrypt()
-        $encryptedContent = openssl_encrypt($content, 'AES-256-CBC', $publicKey, OPENSSL_RAW_DATA, $iv);
-
-        // Menyimpan file yang dienkripsi ke lokasi tujuan
-        file_put_contents($encryptedFilePath, $encryptedContent);
+        // Save the Excel file as encrypted
+        $spreadsheet->getSecurity()->setLockWindows(true);
+        $spreadsheet->getSecurity()->setLockStructure(true);
+        $spreadsheet->getSecurity()->setWorkbookPassword($publicKey);
+        $spreadsheet->save($encryptedFilePath);
     }
-
 
     private function encryptGambarFile($filePath, $publicKey, $encryptedFilePath) {
-        // Membaca konten file gambar
+        // Read the image file content
         $content = file_get_contents($filePath);
 
         // Generate a random IV
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('AES-256-CBC'));
 
-        // Proses enkripsi menggunakan openssl_encrypt()
+        // Encrypt the content using openssl_encrypt()
         $encryptedContent = openssl_encrypt($content, 'AES-256-CBC', $publicKey, OPENSSL_RAW_DATA, $iv);
 
-        // Menyimpan file yang dienkripsi ke lokasi tujuan
+        // Save the encrypted file to the destination path
         file_put_contents($encryptedFilePath, $encryptedContent);
     }
 
+   private function updateImagePathInExcel($excelFilePath, $imageName, $imagePath) {
+		// Load the Excel file using PhpSpreadsheet
+		$spreadsheet = IOFactory::load($excelFilePath);
+		$worksheet = $spreadsheet->getActiveSheet();
 
-    private function sisipkanFileKeExcel($excelFilePath, $gambarFilePath) {
-        // Buka file excel menggunakan PhpSpreadsheet
-        $spreadsheet = new Spreadsheet();
-        $spreadsheet->getActiveSheet()->setCellValue('A1', 'Nama File');
-        $spreadsheet->getActiveSheet()->setCellValue('B1', 'Path File');
+		// Set the headers in cells A1 and B1
+		$worksheet->setCellValue('A1', 'Nama File');
+		$worksheet->setCellValue('B1', 'Path File');
 
-        // Simpan gambar ke dalam file excel
-        $drawing = new Drawing();
-        $drawing->setName('Nama Gambar');
-        $drawing->setDescription('Deskripsi Gambar');
-        $drawing->setPath($gambarFilePath);
-        $drawing->setCoordinates('A2');
-        $drawing->setWorksheet($spreadsheet->getActiveSheet());
+		// Count the number of existing rows in the worksheet
+		$lastRow = $worksheet->getHighestRow();
+		$newRow = $lastRow + 1;
 
-        // Simpan file excel yang telah diubah
-        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $writer->save($excelFilePath);
-    }
+		// Insert the image name and path into the worksheet
+		$worksheet->setCellValue('A' . $newRow, $imageName);
+		$worksheet->setCellValue('B' . $newRow, $imagePath);
+
+		// Save the modified Excel file
+		$writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+		$writer->save($excelFilePath);
+	}
+
 }
