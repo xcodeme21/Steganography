@@ -42,8 +42,8 @@ class GenerateKey extends CI_Controller {
 		// Calculate d
 		$d = $this->calculateD($e, $m);
 
-		$privateKey = "($d, $n)";
-		$publicKey = "($e, $n)";
+		$privateKey = "($d,$n)";
+		$publicKey = "($e,$n)";
 
 		// Set the 
 		$this->session->set_flashdata('p', $p);
