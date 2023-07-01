@@ -106,48 +106,58 @@ class Enkripsi extends CI_Controller {
 
     private function encryptAndEmbed($sourceFile, $outputFile, $messageToHide) {
         // Mengambil konten gambar asli
-        $imageContents = file_get_contents($sourceFile);
+        $image = imagecreatefromstring(file_get_contents($sourceFile));
 
         // Mengonversi RSA chipper menjadi binary
         $binaryMessage = $this->convertToBinary($messageToHide);
 
         // Menyisipkan pesan binary ke dalam gambar menggunakan metode steganografi
-        $imageWithMessage = $this->hideMessageInImage($imageContents, $binaryMessage);
+        $this->hideMessageInImage($image, $binaryMessage);
 
         // Menyimpan gambar dengan pesan yang telah disisipkan
-        if (file_put_contents($outputFile, $imageWithMessage) === false) {
+        if (!imagepng($image, $outputFile)) {
             echo "Gagal menyimpan gambar dengan pesan yang disisipkan.";
             return;
         }
+
+        // Membebaskan memori yang digunakan oleh objek gambar
+        imagedestroy($image);
     }
 
-    private function hideMessageInImage($imageContents, $messageToHide) {
-        // Mendeklarasikan variabel untuk menyimpan gambar hasil penyisipan pesan
-        $imageWithMessage = '';
-
+    private function hideMessageInImage($image, $messageToHide) {
         // Konversi pesan menjadi binary
         $messageBits = $messageToHide;
 
         // Menyisipkan pesan binary ke dalam bit LSB (Least Significant Bit) dari setiap byte gambar
-        $imageLength = strlen($imageContents);
+        $imageWidth = imagesx($image);
+        $imageHeight = imagesy($image);
         $messageLength = strlen($messageBits);
         $messageIndex = 0;
 
-        for ($i = 0; $i < $imageLength; $i++) {
-            // Mendapatkan byte gambar
-            $byte = ord($imageContents[$i]);
+        for ($y = 0; $y < $imageHeight; $y++) {
+            for ($x = 0; $x < $imageWidth; $x++) {
+                // Mendapatkan warna pixel
+                $rgb = imagecolorat($image, $x, $y);
+                $r = ($rgb >> 16) & 0xFF;
+                $g = ($rgb >> 8) & 0xFF;
+                $b = $rgb & 0xFF;
 
-            // Menyisipkan bit pesan ke dalam bit LSB byte gambar
-            if ($messageIndex < $messageLength) {
-                $bit = $messageBits[$messageIndex];
-                $byte = ($byte & 0xFE) | $bit;
-                $messageIndex++;
+                // Menyisipkan bit pesan ke dalam bit LSB komponen warna
+                if ($messageIndex < $messageLength) {
+                    $bit = $messageBits[$messageIndex];
+                    $r = ($r & 0xFE) | $bit;
+                    $messageIndex++;
+                }
+
+                // Menetapkan warna pixel yang telah dimodifikasi
+                $modifiedRgb = ($r << 16) | ($g << 8) | $b;
+                imagesetpixel($image, $x, $y, $modifiedRgb);
+
+                // Berhenti jika sudah mencapai akhir pesan
+                if ($messageIndex >= $messageLength) {
+                    break 2;
+                }
             }
-
-            // Menyimpan byte yang telah dimodifikasi ke dalam gambar hasil penyisipan pesan
-            $imageWithMessage .= chr($byte);
         }
-
-        return $imageWithMessage;
     }
 }
