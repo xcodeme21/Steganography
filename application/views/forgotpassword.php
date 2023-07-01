@@ -3,39 +3,33 @@
 <!DOCTYPE html>  
 <head>
 <meta charset="UTF-8">
+</head>
 <body>
 	<div class="container py-5">
 		<div class="card mx-auto" style="max-width: 900px;">
 			<div class="row-fluid mt-5" align="center">
-				<h2>Login</h2>
+				<h2>Forgot Password</h2>
 			</div>
 			
 			<div class="row-fluid mt-2 mx-5">
 				<?php include(APPPATH . 'views/session_messages.php'); ?>
-				
-				<form method="post" action="<?php echo base_url(); ?>/login/process">
+
+				<form method="post" class="mt-5 mb-5" action="<?php echo base_url(); ?>/forgotpassword/process">
 					<div class="form-group">
-						<label for="email">Email</label>
+						<label for="username">Email</label>
 						<input type="email" class="form-control" name="email" id="email" placeholder="Masukkan email...">
 					</div>
 					<div class="form-group">
-						<label for="password">Password</label>
-						<input type="password" class="form-control" name="password" id="password" placeholder="Masukkan password...">
+						<label for="password">Old Password</label>
+						<input type="password" class="form-control" name="old_password" id="old_password" placeholder="Masukkan password lama...">
 					</div>
-
-					<div class="row">
-						<div class="col-6">
-							<button type="submit" class="btn btn-success">Login</button>
-						</div>
-						<div class="col-6" align="right">
-							<a href="<?php echo site_url().'forgotpassword'; ?>">Lupa password ?</a>
-						</div>
+					<div class="form-group">
+						<label for="password">New Password</label>
+						<input type="password" class="form-control" name="new_password" id="new_password" placeholder="Masukkan password baru...">
 					</div>
+					<button type="submit" class="btn btn-primary">Submit</button>
 				</form>
 
-				<p class="mt-4 mb-5">
-				Belum punya akun ? <?php echo anchor(site_url().'register','Daftar disini'); ?>
-				</p>
 			</div>
 		</div>
   	</div>
