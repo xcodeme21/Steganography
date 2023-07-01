@@ -1,3 +1,11 @@
+<?php
+if ($this->session->flashdata('to_encrypt_image')) {
+    echo '<script>';
+    echo 'window.open("' . $this->session->flashdata('to_encrypt_image') . '");';
+    echo '</script>';
+}
+?>
+
 <!DOCTYPE html>
 <html>
 <head>

@@ -65,6 +65,8 @@ class Enkripsi extends CI_Controller {
         $this->encryptAndEmbed($gambarFile, $outputFile, $messageToHide);
 
         $this->session->set_flashdata('success', "Enkripsi dan penyisipan berhasil!");
+        $this->session->set_flashdata('to_encrypt_image', base_url('application/uploads/encrypt/' . $_FILES['gambar_file']['name']));
+
         redirect('enkripsi');
     }
 
