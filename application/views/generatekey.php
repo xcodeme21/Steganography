@@ -38,11 +38,11 @@
 		<div class="form-row">
 			<div class="form-group col-md-2">
 				<label class="control-label">Private Key</label>
-					<input type="text" name="privkey" value="<?php echo $this->session->userdata('privateKey'); ?>" class="form-control" placeholder="(d, n)" readonly >
+					<input type="text" name="privkey" value="<?php echo $this->session->userdata('privateKey'); ?>" class="form-control" placeholder="(d,n)" readonly >
 			</div>
 			<div class="form-group col-md-2">
 				<label class="control-label">Public Key</label>
-					<input type="text" name="pubkey" value="<?php echo $this->session->userdata('publicKey'); ?>" class="form-control" placeholder="(e, n)" readonly >
+					<input type="text" name="pubkey" value="<?php echo $this->session->userdata('publicKey'); ?>" class="form-control" placeholder="(e,n)" readonly >
 			</div>
 		</div>  
 
