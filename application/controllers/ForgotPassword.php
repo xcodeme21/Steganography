@@ -27,7 +27,6 @@ class ForgotPassword extends CI_Controller {
     public function process() {
         // Form validation rules
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
-        $this->form_validation->set_rules('old_password', 'Old Password', 'required');
         $this->form_validation->set_rules('new_password', 'New Password', 'required|min_length[6]');
 
         if ($this->form_validation->run() == FALSE) {
@@ -37,11 +36,10 @@ class ForgotPassword extends CI_Controller {
         } else {
             // Form validation succeeded
             $email = $this->input->post('email');
-            $oldPassword = $this->input->post('old_password');
             $newPassword = $this->input->post('new_password');
 
             // Check if email and old password are valid in the database
-            $isValid = $this->auth->checkCredentials($email, $oldPassword);
+            $isValid = $this->auth->checkCredentials($email);
 
             if ($isValid) {
                 // Update the password in the database
@@ -52,7 +50,7 @@ class ForgotPassword extends CI_Controller {
                 redirect('login');
             } else {
                 // Set error flashdata message
-                $this->session->set_flashdata('error', 'Invalid email or old password.');
+                $this->session->set_flashdata('error', 'Invalid email.');
                 redirect('forgotpassword');
             }
         }

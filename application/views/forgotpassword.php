@@ -20,10 +20,6 @@
 						<input type="email" class="form-control" name="email" id="email" placeholder="Masukkan email...">
 					</div>
 					<div class="form-group">
-						<label for="password">Old Password</label>
-						<input type="password" class="form-control" name="old_password" id="old_password" placeholder="Masukkan password lama...">
-					</div>
-					<div class="form-group">
 						<label for="password">New Password</label>
 						<input type="password" class="form-control" name="new_password" id="new_password" placeholder="Masukkan password baru...">
 					</div>

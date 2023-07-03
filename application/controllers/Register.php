@@ -29,7 +29,7 @@ class Register extends CI_Controller {
 	public function process()
 	{
 		$this->form_validation->set_rules('email', 'email','trim|required|min_length[1]|max_length[255]|is_unique[tbl_users.email]');
-		$this->form_validation->set_rules('password', 'password','trim|required|min_length[1]|max_length[255]');
+		$this->form_validation->set_rules('password', 'password','trim|required|min_length[6]|max_length[255]');
 		$this->form_validation->set_rules('nama', 'nama','trim|required|min_length[1]|max_length[255]');
 		if ($this->form_validation->run()==true)
 	   	{

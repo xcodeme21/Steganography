@@ -54,14 +54,11 @@ class Auth extends CI_Model
         $this->db->update('tbl_users', array('password' => $hashedPassword));
     }
 
-    function checkCredentials($email, $password)
+    function checkCredentials($email)
     {
         $user = $this->get_user_by_email($email);
         if ($user) {
-            // User found, check if the old password matches
-            if (password_verify($password, $user->password)) {
-                return true;
-            }
+            return true;
         }
         return false;
     }
