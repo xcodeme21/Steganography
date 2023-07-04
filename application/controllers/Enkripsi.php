@@ -55,6 +55,7 @@ class Enkripsi extends CI_Controller {
 
         // Mengonversi data menjadi RSA chipper
         $messageToHide = $this->convertToRSA($data, $publicKey);
+		//var_dump($messageToHide);die();
 
 
         // Melanjutkan proses enkripsi dan penyisipan
@@ -64,34 +65,61 @@ class Enkripsi extends CI_Controller {
         // Mengenkripsi pesan ke dalam gambar
         $this->encryptAndEmbed($gambarFile, $outputFile, $messageToHide);
 
-        $this->session->set_flashdata('success', "Enkripsi dan penyisipan berhasil!");
-        $this->session->set_flashdata('to_encrypt_image', base_url('application/uploads/encrypt/' . $_FILES['gambar_file']['name']));
+        // Mendownload file gambar yang telah disisipkan
+        $this->downloadImage($outputFile);
+    }
 
-        redirect('enkripsi');
+    public function downloadImage($filePath) {
+        // Mendownload file gambar yang telah disisipkan
+        if (file_exists($filePath)) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="' . basename($filePath) . '"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($filePath));
+            readfile($filePath);
+			exit;
+        } else {
+        	$this->session->set_flashdata('error', "File gambar tidak ditemukan.");
+			
+        	redirect('enkripsi');
+        }
     }
 
     private function getDataFromExcel($spreadsheet) {
-        $data = array();
+		$data = array();
 
-        $worksheet = $spreadsheet->getActiveSheet();
-        $highestRow = $worksheet->getHighestRow();
-        $highestColumn = $worksheet->getHighestColumn();
+		$worksheet = $spreadsheet->getActiveSheet();
+		$highestRow = $worksheet->getHighestRow();
+		$highestColumn = $worksheet->getHighestColumn();
 
-        for ($row = 1; $row <= $highestRow; $row++) {
-            $rowData = $worksheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, null, true, false);
-            $data[] = $rowData[0];
-        }
+		for ($row = 1; $row <= $highestRow; $row++) {
+			$rowData = $worksheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, null, true, false);
+			$data[] = $rowData[0];
+		}
 
-        return $data;
-    }
+		return $data;
+	}
 
     private function convertToRSA($data, $publicKey) {
-        // mengonversi data menjadi RSA chipper
-        $message = serialize($data); // Mengubah data menjadi string terformat
-        $rsaChipper = $message;
+		// Mengonversi data menjadi string terformat
+		$message = "";
+		foreach ($data as $row) {
+			foreach ($row as $cell) {
+				if (!empty($cell)) {
+					$message .= $cell . ", ";
+				}
+			}
+		}
+		$message = rtrim($message, ", "); // Menghapus koma dan spasi terakhir
+		$rsaChipper = $message;
 
-        return $rsaChipper;
-    }
+		return $rsaChipper;
+	}
+
+
 
     private function convertToBinary($messageToHide) {
         $binaryMessage = '';

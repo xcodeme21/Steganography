@@ -22,12 +22,4 @@
 						</div>
 			</fieldset>
 		</form>
-
-		<?php if ($this->session->flashdata('hidden_message')) { ?>
-			<div class="alert alert-success" style="word-wrap: break-word; max-width: 100%;">
-				<strong>Hidden Message:</strong> <?php echo $this->session->flashdata('hidden_message'); ?>
-			</div>
-		<?php } ?>
-
-
     </div>
