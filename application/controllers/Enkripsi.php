@@ -122,7 +122,7 @@ class Enkripsi extends CI_Controller {
 			$new_color = imagecolorallocate($im, $newR, $newG, $newB);
 			imagesetpixel($im, $x, $y, $new_color);
 		}
-		
+
 		$this->encrypt->create($outputFilename, $message_to_hide);
 
         // Save the encrypted image
@@ -136,7 +136,7 @@ class Enkripsi extends CI_Controller {
         readfile($outputFile);
 
         // Remove the temporary file
-        unlink($outputFile);
+        // unlink($outputFile);
     }
 
     private function getDataFromExcel($spreadsheet) {
