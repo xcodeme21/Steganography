@@ -44,25 +44,62 @@ class Dekripsi extends CI_Controller {
         }
 
         // Mendapatkan file gambar
-        $imageFile = $_FILES['image']['tmp_name'];
+        $src = $_FILES['image']['tmp_name'];
+		$srcFileType = exif_imagetype($src);
 
-        // Membaca gambar dan mendekripsi pesan yang disisipkan
-        $decryptedMessage = $this->decryptAndExtract($imageFile, $privateKey);
+        // Determine the imagecreatefrom function based on the file type
+        $imagecreatefromFunction = '';
+		switch ($srcFileType) {
+			case IMAGETYPE_JPEG:
+				$imagecreatefromFunction = 'imagecreatefromjpeg';
+				break;
+			case IMAGETYPE_PNG:
+				$imagecreatefromFunction = 'imagecreatefrompng';
+				break;
+			case IMAGETYPE_GIF:
+				$imagecreatefromFunction = 'imagecreatefromgif';
+				break;
+			// Add additional cases for other supported image types as needed
+			default:
+				echo "The uploaded file is not a valid image.";
+				return;
+		}
 
-        // Mengkonversi pesan yang telah didekripsi menjadi array data
-        $data = $this->convertToArray($decryptedMessage);
+        // Create the image resource
+        $im = call_user_func($imagecreatefromFunction, $src);
 
-        // Membuat file CSV dari data
-        $csvFile = $this->createCSV($data);
 
-        // Menyimpan file CSV
-        $imageName = $_FILES['image']['name'];
-        $outputFile = APPPATH . 'uploads/decrypt/' . pathinfo($imageName, PATHINFO_FILENAME) . '.csv';
-        write_file($outputFile, $csvFile);
-
-        // Mengirim file CSV ke browser untuk diunduh
-        $this->downloadFile($outputFile);
+		$real_message = '';
+		for($x=0;$x<200;$x++){
+		$y = $x;
+		$rgb = imagecolorat($im,$x,$y);
+		$r = ($rgb >>16) & 0xFF;
+		$g = ($rgb >>8) & 0xFF;
+		$b = $rgb & 0xFF;
+		
+		$blue = $this->toBin($b);
+		$real_message .= $blue[strlen($blue)-1];
+		}
+		$real_message = $this->toString($real_message);
+		echo $real_message;
+		die;
     }
+	
+
+    private function toBin($str) {
+        $str = (string) $str;
+        $l = strlen($str);
+        $result = '';
+        while ($l--) {
+            $result = str_pad(decbin(ord($str[$l])), 8, "0", STR_PAD_LEFT) . $result;
+        }
+        return $result;
+    }
+
+    private function toString($binary) {
+        return pack('H*', base_convert($binary, 2, 16));
+    }
+
 
     private function decryptAndExtract($imageFile, $privateKey) {
         // Mendapatkan konten gambar

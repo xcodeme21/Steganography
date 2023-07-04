@@ -93,34 +93,35 @@ class Enkripsi extends CI_Controller {
         $imageHeight = imagesy($im);
 
         for ($x = 0; $x < $message_length; $x++) {
-            $y = $x;
+			$y = $x;
 
-            // Check if coordinates are within image bounds
-            if ($x >= $imageWidth) {
-                $y += floor($x / $imageWidth);
-                $x = $x % $imageWidth;
-            }
+			// Check if coordinates are within image bounds
+			if ($x >= $imageWidth) {
+				$y += floor($x / $imageWidth);
+				$x = $x % $imageWidth;
+			}
 
-            // Check if coordinates are within image bounds
-            if ($x >= $imageWidth || $y >= $imageHeight) {
-                echo "Coordinates are out of bounds";
-                break;
-            }
+			// Check if coordinates are within image bounds
+			if ($x >= $imageWidth || $y >= $imageHeight) {
+				echo "Coordinates are out of bounds";
+				break;
+			}
 
-            $rgb = imagecolorat($im, $x, $y);
-            $r = ($rgb >> 16) & 0xFF;
-            $g = ($rgb >> 8) & 0xFF;
-            $b = $rgb & 0xFF;
+			$rgb = imagecolorat($im, $x, $y);
+			$r = ($rgb >> 16) & 0xFF;
+			$g = ($rgb >> 8) & 0xFF;
+			$b = $rgb & 0xFF;
 
-            $newR = $r;
-            $newG = $g;
-            $newB = $this->toBin($b);
-            $newB[strlen($newB)-1] = $binary_message[$x];
-            $newB = $this->toString($newB);
+			$newR = $r;
+			$newG = $g;
 
-            $new_color = imagecolorallocate($im, $newR, $newG, $newB);
-            imagesetpixel($im, $x, $y, $new_color);
-        }
+			// Replace the least significant bit of blue component with the encrypted message bit
+			$newB = ($b & 0xFE) | $binary_message[$x];
+
+			$new_color = imagecolorallocate($im, $newR, $newG, $newB);
+			imagesetpixel($im, $x, $y, $new_color);
+		}
+
 
         // Save the encrypted image
         imagepng($im, $outputFile);
