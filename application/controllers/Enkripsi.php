@@ -54,140 +54,130 @@ class Enkripsi extends CI_Controller {
         $data = $this->getDataFromExcel($spreadsheet);
 
         // Mengonversi data menjadi RSA chipper
-        $messageToHide = $this->convertToRSA($data, $publicKey);
-		//var_dump($messageToHide);die();
-
+        $message_to_hide = $this->convertToRSA($data, $publicKey);
+        $binary_message = $this->toBin($message_to_hide);
+        $message_length = strlen($binary_message);
 
         // Melanjutkan proses enkripsi dan penyisipan
-        $gambarFile = $_FILES['gambar_file']['tmp_name'];
-        $outputFile = APPPATH . 'uploads/encrypt/' . $_FILES['gambar_file']['name'];
+        $src = $_FILES['gambar_file']['tmp_name'];
+        $srcFileType = exif_imagetype($src);
 
-        // Mengenkripsi pesan ke dalam gambar
-        $this->encryptAndEmbed($gambarFile, $outputFile, $messageToHide);
+        // Determine the imagecreatefrom function based on the file type
+        $imagecreatefromFunction = '';
+		switch ($srcFileType) {
+			case IMAGETYPE_JPEG:
+				$imagecreatefromFunction = 'imagecreatefromjpeg';
+				break;
+			case IMAGETYPE_PNG:
+				$imagecreatefromFunction = 'imagecreatefrompng';
+				break;
+			case IMAGETYPE_GIF:
+				$imagecreatefromFunction = 'imagecreatefromgif';
+				break;
+			// Add additional cases for other supported image types as needed
+			default:
+				echo "The uploaded file is not a valid image.";
+				return;
+		}
 
-        // Mendownload file gambar yang telah disisipkan
-        $this->downloadImage($outputFile);
-    }
 
-    public function downloadImage($filePath) {
-        // Mendownload file gambar yang telah disisipkan
-        if (file_exists($filePath)) {
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="' . basename($filePath) . '"');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize($filePath));
-            readfile($filePath);
-			exit;
-        } else {
-        	$this->session->set_flashdata('error', "File gambar tidak ditemukan.");
-			
-        	redirect('enkripsi');
+        // Determine the output file path and name
+        $outputPath = APPPATH . 'uploads/encrypt/';
+        $outputFilename = uniqid() . '.png';
+        $outputFile = $outputPath . $outputFilename;
+
+        // Create the image resource
+        $im = call_user_func($imagecreatefromFunction, $src);
+
+        $imageWidth = imagesx($im);
+        $imageHeight = imagesy($im);
+
+        for ($x = 0; $x < $message_length; $x++) {
+            $y = $x;
+
+            // Check if coordinates are within image bounds
+            if ($x >= $imageWidth) {
+                $y += floor($x / $imageWidth);
+                $x = $x % $imageWidth;
+            }
+
+            // Check if coordinates are within image bounds
+            if ($x >= $imageWidth || $y >= $imageHeight) {
+                echo "Coordinates are out of bounds";
+                break;
+            }
+
+            $rgb = imagecolorat($im, $x, $y);
+            $r = ($rgb >> 16) & 0xFF;
+            $g = ($rgb >> 8) & 0xFF;
+            $b = $rgb & 0xFF;
+
+            $newR = $r;
+            $newG = $g;
+            $newB = $this->toBin($b);
+            $newB[strlen($newB)-1] = $binary_message[$x];
+            $newB = $this->toString($newB);
+
+            $new_color = imagecolorallocate($im, $newR, $newG, $newB);
+            imagesetpixel($im, $x, $y, $new_color);
         }
+
+        // Save the encrypted image
+        imagepng($im, $outputFile);
+        imagedestroy($im);
+
+        // Download the encrypted image
+        header('Content-Type: application/octet-stream');
+        header('Content-Transfer-Encoding: Binary');
+        header('Content-disposition: attachment; filename="' . $outputFilename . '"');
+        readfile($outputFile);
+
+        // Remove the temporary file
+        unlink($outputFile);
     }
 
     private function getDataFromExcel($spreadsheet) {
-		$data = array();
+        $data = array();
 
-		$worksheet = $spreadsheet->getActiveSheet();
-		$highestRow = $worksheet->getHighestRow();
-		$highestColumn = $worksheet->getHighestColumn();
+        $worksheet = $spreadsheet->getActiveSheet();
+        $highestRow = $worksheet->getHighestRow();
+        $highestColumn = $worksheet->getHighestColumn();
 
-		for ($row = 1; $row <= $highestRow; $row++) {
-			$rowData = $worksheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, null, true, false);
-			$data[] = $rowData[0];
-		}
+        for ($row = 1; $row <= $highestRow; $row++) {
+            $rowData = $worksheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, null, true, false);
+            $data[] = $rowData[0];
+        }
 
-		return $data;
-	}
+        return $data;
+    }
 
     private function convertToRSA($data, $publicKey) {
-		// Mengonversi data menjadi string terformat
-		$message = "";
-		foreach ($data as $row) {
-			foreach ($row as $cell) {
-				if (!empty($cell)) {
-					$message .= $cell . ", ";
-				}
-			}
-		}
-		$message = rtrim($message, ", "); // Menghapus koma dan spasi terakhir
-		$rsaChipper = $message;
-
-		return $rsaChipper;
-	}
-
-
-
-    private function convertToBinary($messageToHide) {
-        $binaryMessage = '';
-
-        $messageLength = strlen($messageToHide);
-        for ($i = 0; $i < $messageLength; $i++) {
-            $char = $messageToHide[$i];
-            $ascii = ord($char);
-            $binaryMessage .= sprintf("%08b", $ascii);
-        }
-
-        return $binaryMessage;
-    }
-
-    private function encryptAndEmbed($sourceFile, $outputFile, $messageToHide) {
-        // Mengambil konten gambar asli
-        $image = imagecreatefromstring(file_get_contents($sourceFile));
-
-        // Mengonversi RSA chipper menjadi binary
-        $binaryMessage = $this->convertToBinary($messageToHide);
-
-        // Menyisipkan pesan binary ke dalam gambar menggunakan metode steganografi
-        $this->hideMessageInImage($image, $binaryMessage);
-
-        // Menyimpan gambar dengan pesan yang telah disisipkan
-        if (!imagepng($image, $outputFile)) {
-            echo "Gagal menyimpan gambar dengan pesan yang disisipkan.";
-            return;
-        }
-
-        // Membebaskan memori yang digunakan oleh objek gambar
-        imagedestroy($image);
-    }
-
-    private function hideMessageInImage($image, $messageToHide) {
-        // Konversi pesan menjadi binary
-        $messageBits = $messageToHide;
-
-        // Menyisipkan pesan binary ke dalam bit LSB (Least Significant Bit) dari setiap byte gambar
-        $imageWidth = imagesx($image);
-        $imageHeight = imagesy($image);
-        $messageLength = strlen($messageBits);
-        $messageIndex = 0;
-
-        for ($y = 0; $y < $imageHeight; $y++) {
-            for ($x = 0; $x < $imageWidth; $x++) {
-                // Mendapatkan warna pixel
-                $rgb = imagecolorat($image, $x, $y);
-                $r = ($rgb >> 16) & 0xFF;
-                $g = ($rgb >> 8) & 0xFF;
-                $b = $rgb & 0xFF;
-
-                // Menyisipkan bit pesan ke dalam bit LSB komponen warna
-                if ($messageIndex < $messageLength) {
-                    $bit = $messageBits[$messageIndex];
-                    $r = ($r & 0xFE) | $bit;
-                    $messageIndex++;
-                }
-
-                // Menetapkan warna pixel yang telah dimodifikasi
-                $modifiedRgb = ($r << 16) | ($g << 8) | $b;
-                imagesetpixel($image, $x, $y, $modifiedRgb);
-
-                // Berhenti jika sudah mencapai akhir pesan
-                if ($messageIndex >= $messageLength) {
-                    break 2;
+        // Mengonversi data menjadi string terformat
+        $message = "";
+        foreach ($data as $row) {
+            foreach ($row as $cell) {
+                if (!empty($cell)) {
+                    $message .= $cell . ", ";
                 }
             }
         }
+        $message = rtrim($message, ", "); // Menghapus koma dan spasi terakhir
+        $rsaChipper = $message;
+
+        return $rsaChipper;
+    }
+
+    private function toBin($str) {
+        $str = (string) $str;
+        $l = strlen($str);
+        $result = '';
+        while ($l--) {
+            $result = str_pad(decbin(ord($str[$l])), 8, "0", STR_PAD_LEFT) . $result;
+        }
+        return $result;
+    }
+
+    private function toString($binary) {
+        return pack('H*', base_convert($binary, 2, 16));
     }
 }

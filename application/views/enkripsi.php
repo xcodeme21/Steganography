@@ -20,7 +20,7 @@
 											<div class="form-group">
 													<label class="col-lg-2 control-label" style="color:#333;" for="inputGambar">Input Gambar</label>
 													<div class="col-lg-4">
-															<input class="form-control" id="inputGambar" placeholder="Input Gambar" type="file" name="gambar_file" accept=".gif, .jpg, .jpeg, .png" required>
+															<input class="form-control" id="inputGambar" placeholder="Input Gambar" type="file" name="gambar_file" accept=".jpg, .jpeg, .png" required>
 													</div>
 											</div>
 											<div class="form-group">
