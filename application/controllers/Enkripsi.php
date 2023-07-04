@@ -12,6 +12,7 @@ class Enkripsi extends CI_Controller {
         parent::__construct();
         $this->load->helper('file');
         $this->load->library('form_validation');
+		$this->load->model('encrypt');
     }
 
     public function index() {
@@ -121,7 +122,8 @@ class Enkripsi extends CI_Controller {
 			$new_color = imagecolorallocate($im, $newR, $newG, $newB);
 			imagesetpixel($im, $x, $y, $new_color);
 		}
-
+		
+		$this->encrypt->create($outputFilename, $message_to_hide);
 
         // Save the encrypted image
         imagepng($im, $outputFile);
