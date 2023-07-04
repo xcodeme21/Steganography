@@ -5,7 +5,7 @@ class GenerateKey extends CI_Controller {
 
     public function index()
     {
-        $data['title'] = 'Form Membuat Kunci';
+        $data['title'] = 'Form Generate Key';
 
 		$this->sessionValidate();
 
